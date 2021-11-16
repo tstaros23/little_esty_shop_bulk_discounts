@@ -21,24 +21,29 @@ class InvoiceItem < ApplicationRecord
     discounts
     .where('quantity_threshold <= ?', "#{self.quantity}")
     .order(percentage_discount: :desc).first
-    # ii_discounts = self.item.merchant.discounts.map do |discount|
-    #   if self.quantity > discount.quantity_threshold
-    #     discount.percentage_discount
-    #   else
-    #     0
-    #   end
-    # end
-    # max_discount = ii_discounts.max
-    # max_discount.nil? ? 0 : (max_discount.to_f / 100)
   end
 
   def revenue
-    if max_discount == nil
-      unit_price * quantity
-    else
-      unit_price * quantity * (1 - (max_discount.percentage_discount.to_f / 100))
-    end
+    max_discount.nil? ? max_discount_nil : max_discount_not_nil
   end
+
+  def max_discount_nil
+    unit_price * quantity
+  end
+  
+  def max_discount_not_nil
+    unit_price * quantity * (1 - (max_discount.percentage_discount.to_f / 100))
+  end
+
+  # ii_discounts = self.item.merchant.discounts.map do |discount|
+  #   if self.quantity > discount.quantity_threshold
+  #     discount.percentage_discount
+  #   else
+  #     0
+  #   end
+  # end
+  # max_discount = ii_discounts.max
+  # max_discount.nil? ? 0 : (max_discount.to_f / 100)
 
   # def max_discount
   #   discounts =  []
@@ -47,8 +52,9 @@ class InvoiceItem < ApplicationRecord
   #       discounts << discount
   #     end
   #   end
-  #   discounts.sort_by()
-  #   require "pry"; binding.pry
+  #   discounts.max_by do |discount|
+  # =>  discount.percentage_discount
+  #   end
   # end
 
   # def discount_applied

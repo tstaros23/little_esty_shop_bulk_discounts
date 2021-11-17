@@ -22,7 +22,7 @@ RSpec.describe 'invoices show' do
     @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
     @ii_2 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 5, unit_price: 10, status: 2)
     @ii_4 = InvoiceItem.create!(invoice_id: @invoice_4.id, item_id: @item_3.id, quantity: 3, unit_price: 5, status: 1)
-    @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 12, unit_price: 6, status: 1)
+    @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 6, unit_price: 6, status: 1)
 
     @transaction1 = Transaction.create!(credit_card_number: 203942, result: 1, invoice_id: @invoice_1.id)
     @transaction4 = Transaction.create!(credit_card_number: 230429, result: 1, invoice_id: @invoice_4.id)
@@ -84,11 +84,13 @@ RSpec.describe 'invoices show' do
   it "has a link next to each discount that takes you to the discount page if any apply" do
     visit merchant_invoice_path(@merchant1, @invoice_1)
 
-    within("#discount-#{@ii_2.id}") do
+    within("#discount-#{@ii_11.id}") do
+        expect(page).to have_content(@item_8.name)
         expect(page).not_to have_link('Discount')
     end
 
     within("#discount-#{@ii_1.id}") do
+        expect(page).to have_content(@item_1.name)
         expect(page).to have_link('Discount')
         click_on('Discount')
     end
